@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "SFCC Copilot",
+  "version": "0.1.0",
+  "description": "AI assistant for Salesforce Commerce Cloud Business Manager",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://*.commercecloud.salesforce.com/*",
+    "https://*.demandware.net/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.commercecloud.salesforce.com/on/demandware.store/Sites-Site/*",
+        "https://*.demandware.net/on/demandware.store/Sites-Site/*"
+      ],
+      "js": ["src/content.js"],
+      "css": ["src/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "SFCC Copilot"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
