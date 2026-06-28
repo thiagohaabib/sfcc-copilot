@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SFCC Copilot — Create SFCC Promotions in Seconds</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #0070d2;
+      --blue-dark: #005fb2;
+      --blue-light: #e8f4fd;
+      --text: #16325c;
+      --text-2: #444;
+      --text-3: #706e6b;
+      --border: #d8dde6;
+      --bg: #f9fafb;
+      --white: #fff;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--white);
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .nav-logo .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      font-size: 14px;
+      color: var(--text-2);
+    }
+
+    .nav-links a { color: var(--text-2); }
+    .nav-links a:hover { color: var(--blue); text-decoration: none; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-dark); text-decoration: none; }
+    .btn-outline { background: transparent; color: var(--blue); border: 1.5px solid var(--blue); }
+    .btn-outline:hover { background: var(--blue-light); text-decoration: none; }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 80px 40px 60px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span { color: var(--blue); }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-3);
+      max-width: 560px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── Demo ── */
+    .demo {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px;
+    }
+
+    .demo-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .demo-text h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .demo-text p {
+      color: var(--text-3);
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .demo-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .demo-step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-text strong { display: block; font-size: 14px; color: var(--text); }
+    .step-text span { font-size: 13px; color: var(--text-3); }
+
+    .demo-visual {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .demo-header {
+      padding: 10px 14px;
+      background: #f4f6f9;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .demo-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+
+    .demo-chat {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 12px 12px 3px 12px;
+    }
+
+    .chat-msg.bot {
+      align-self: flex-start;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px 12px 12px 3px;
+      color: var(--text);
+    }
+
+    .demo-card {
+      margin: 0 16px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .demo-card-header {
+      padding: 8px 12px;
+      background: #f4f6f9;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+    }
+
+    .demo-card-body {
+      padding: 10px 12px;
+    }
+
+    .demo-field {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 3px 0;
+    }
+
+    .demo-field-label { color: var(--text-3); }
+    .demo-field-value { color: var(--text); font-weight: 500; }
+
+    .demo-card-actions {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .demo-btn-confirm {
+      flex: 1;
+      padding: 6px 0;
+      font-size: 12px;
+      border-radius: 4px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      font-weight: 500;
+    }
+
+    .demo-btn-cancel {
+      flex: 1;
+      padding: 6px 0;
+      font-size: 12px;
+      border-radius: 4px;
+      background: #fff;
+      color: var(--text-3);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Features ── */
+    .features {
+      padding: 72px 40px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .feature-card {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--white);
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-3);
+      line-height: 1.6;
+    }
+
+    /* ── Pricing ── */
+    .pricing {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 72px 40px;
+    }
+
+    .pricing-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .pricing-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--blue);
+      border-width: 2px;
+      position: relative;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--blue);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 14px;
+      border-radius: 999px;
+    }
+
+    .pricing-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pricing-price {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .pricing-price span {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-3);
+    }
+
+    .pricing-desc {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .pricing-features li {
+      font-size: 13px;
+      color: var(--text-2);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--blue);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center;
+      padding: 80px 40px;
+    }
+
+    .cta-section h2 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .cta-section p {
+      font-size: 16px;
+      color: var(--text-3);
+      margin-bottom: 32px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .demo-inner { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-icon">✦</div>
+    SFCC Copilot
+  </div>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="setup.html">Setup Guide</a>
+  </div>
+  <a href="https://github.com/thiagohaabib/sfcc-copilot" class="btn btn-primary" target="_blank">
+    Install Extension
+  </a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">Chrome Extension for Salesforce Commerce Cloud</div>
+  <h1>Create SFCC promotions<br /><span>in plain English</span></h1>
+  <p>Stop clicking through Business Manager forms. Just describe what you want — SFCC Copilot creates the campaign, promotion, and coupon for you.</p>
+  <div class="hero-cta">
+    <a href="https://github.com/thiagohaabib/sfcc-copilot" class="btn btn-primary" target="_blank">Install Chrome Extension</a>
+    <a href="setup.html" class="btn btn-outline">Setup Guide</a>
+  </div>
+</section>
+
+<!-- Demo -->
+<section class="demo" id="how-it-works">
+  <div class="demo-inner">
+    <div class="demo-text">
+      <h2>Three steps. Zero forms.</h2>
+      <p>SFCC Copilot lives inside Business Manager as a chat button. No new tabs, no switching tools.</p>
+      <div class="demo-steps">
+        <div class="demo-step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <strong>Describe your promotion</strong>
+            <span>Type naturally — dates, audience, coupon codes.</span>
+          </div>
+        </div>
+        <div class="demo-step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <strong>Review the preview</strong>
+            <span>See exactly what will be created before confirming.</span>
+          </div>
+        </div>
+        <div class="demo-step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <strong>Confirm & done</strong>
+            <span>Campaign, promotion, and coupon created in seconds.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-visual">
+      <div class="demo-header">
+        <div class="dot"></div>
+        SFCC Copilot · RefArch
+      </div>
+      <div class="demo-chat">
+        <div class="chat-msg bot">Hi! Describe the promotion you want to create.</div>
+        <div class="chat-msg user">50% off for VIP customers from June 20 to June 30, with coupon VIP50</div>
+        <div class="chat-msg bot">Before I create this, a few details:<br/>• Coupon VIP50 — usage limit or unlimited?</div>
+        <div class="chat-msg user">500 uses</div>
+        <div class="chat-msg bot">Got it! Here's what I'll create:</div>
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <span class="tag">Preview</span>
+          CAMP_VIP50_2026_A3K2
+        </div>
+        <div class="demo-card-body">
+          <div class="demo-field"><span class="demo-field-label">Start</span><span class="demo-field-value">2026-06-20</span></div>
+          <div class="demo-field"><span class="demo-field-label">End</span><span class="demo-field-value">2026-06-30</span></div>
+          <div class="demo-field"><span class="demo-field-label">Audience</span><span class="demo-field-value">Controlled by coupon</span></div>
+          <div class="demo-field"><span class="demo-field-label">Promotion</span><span class="demo-field-value">PROMO_VIP50_2026_A3K2</span></div>
+          <div class="demo-field"><span class="demo-field-label">Coupon</span><span class="demo-field-value">VIP50</span></div>
+          <div class="demo-field"><span class="demo-field-label">Limit</span><span class="demo-field-value">500 uses</span></div>
+        </div>
+        <div class="demo-card-actions">
+          <button class="demo-btn-confirm">Confirm &amp; Create</button>
+          <button class="demo-btn-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything you need, nothing you don't</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>Natural language input</h3>
+      <p>Describe promotions the way you'd explain them to a colleague. No SFCC jargon required.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Instant creation</h3>
+      <p>Campaign, promotion, customer group, and coupon — all created and linked in one action via OCAPI.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>Lookup existing records</h3>
+      <p>Ask for details of any promotion or campaign by ID. Get structured info without opening the BM form.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎟️</div>
+      <h3>Smart coupon handling</h3>
+      <p>Copilot detects when a campaign already has Everyone group and warns you before making the coupon redundant.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Your credentials, your data</h3>
+      <p>SFCC credentials are stored locally in your browser. Nothing is shared or stored on our servers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <h3>Works on any SFCC instance</h3>
+      <p>Compatible with any SFCC sandbox or production environment running OCAPI Data API v24+.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, transparent pricing</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price">$49 <span>/ seat / mo</span></div>
+        <div class="pricing-desc">For individual merchandisers and developers.</div>
+        <ul class="pricing-features">
+          <li>1 user</li>
+          <li>1 SFCC instance</li>
+          <li>Promotions, campaigns & coupons</li>
+          <li>Promotion & campaign lookup</li>
+          <li>Email support</li>
+        </ul>
+        <a href="mailto:thiago@bloomcreate.com.br?subject=SFCC Copilot Pro" class="btn btn-outline">Get started</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="featured-badge">Most popular</div>
+        <div class="pricing-name">Team</div>
+        <div class="pricing-price">$149 <span>/ mo</span></div>
+        <div class="pricing-desc">For merchandising teams working together.</div>
+        <ul class="pricing-features">
+          <li>Up to 5 users</li>
+          <li>1 SFCC instance</li>
+          <li>Everything in Pro</li>
+          <li>Priority support</li>
+          <li>Onboarding call</li>
+        </ul>
+        <a href="mailto:thiago@bloomcreate.com.br?subject=SFCC Copilot Team" class="btn btn-primary">Get started</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">Enterprise</div>
+        <div class="pricing-price">Custom</div>
+        <div class="pricing-desc">For agencies managing multiple SFCC clients.</div>
+        <ul class="pricing-features">
+          <li>Unlimited users</li>
+          <li>Multiple SFCC instances</li>
+          <li>Everything in Team</li>
+          <li>SFCC cartridge version</li>
+          <li>SLA & dedicated support</li>
+        </ul>
+        <a href="mailto:thiago@bloomcreate.com.br?subject=SFCC Copilot Enterprise" class="btn btn-outline">Contact us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to stop clicking?</h2>
+  <p>Install the Chrome extension and connect your SFCC instance in under 2 minutes.</p>
+  <a href="https://github.com/thiagohaabib/sfcc-copilot" class="btn btn-primary" target="_blank">Install Chrome Extension</a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span>© 2026 SFCC Copilot</span>
+  <div style="display:flex;gap:24px;">
+    <a href="setup.html">Setup Guide</a>
+    <a href="mailto:thiago@bloomcreate.com.br">Contact</a>
+    <a href="https://github.com/thiagohaabib/sfcc-copilot" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+</body>
+</html>

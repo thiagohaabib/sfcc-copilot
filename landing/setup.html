@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup Guide — SFCC Copilot</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #0070d2;
+      --blue-light: #e8f4fd;
+      --text: #16325c;
+      --text-2: #444;
+      --text-3: #706e6b;
+      --border: #d8dde6;
+      --bg: #f9fafb;
+      --white: #fff;
+      --radius: 10px;
+      --green: #2e844a;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); background: var(--white); line-height: 1.7; }
+    a { color: var(--blue); }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px; border-bottom: 1px solid var(--border);
+      background: var(--white); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .nav-logo .logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+
+    .layout { display: grid; grid-template-columns: 240px 1fr; gap: 0; max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+
+    .sidebar { position: sticky; top: 80px; height: fit-content; padding-right: 40px; border-right: 1px solid var(--border); }
+    .sidebar-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); margin-bottom: 12px; }
+    .sidebar ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .sidebar a { font-size: 13px; color: var(--text-2); text-decoration: none; display: block; padding: 5px 8px; border-radius: 6px; }
+    .sidebar a:hover { background: var(--blue-light); color: var(--blue); }
+
+    .content { padding-left: 48px; }
+    .content h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .content .subtitle { font-size: 16px; color: var(--text-3); margin-bottom: 48px; }
+
+    .content h2 { font-size: 22px; font-weight: 700; margin: 48px 0 16px; padding-top: 48px; border-top: 1px solid var(--border); }
+    .content h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+    .content h3 { font-size: 16px; font-weight: 700; margin: 24px 0 10px; }
+    .content p { font-size: 15px; color: var(--text-2); margin-bottom: 16px; }
+
+    .step-block {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px;
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+      color: #fff; font-size: 13px; font-weight: 700; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-content strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 4px; }
+    .step-content span { font-size: 13px; color: var(--text-3); }
+
+    pre {
+      background: #1e1e2e; color: #cdd6f4; padding: 20px 24px;
+      border-radius: var(--radius); overflow-x: auto; font-size: 13px;
+      line-height: 1.6; margin: 16px 0;
+    }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; }
+    p code, li code {
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 1px 6px; border-radius: 4px; font-size: 13px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .alert {
+      padding: 14px 18px; border-radius: var(--radius);
+      font-size: 14px; margin: 16px 0; display: flex; gap: 12px;
+    }
+    .alert-info { background: var(--blue-light); border: 1px solid #b3d9f7; color: #0c4a8c; }
+    .alert-warn { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
+    .alert-success { background: #d4edda; border: 1px solid #c3e6cb; color: var(--green); }
+
+    ul, ol { padding-left: 20px; margin-bottom: 16px; }
+    li { font-size: 15px; color: var(--text-2); margin-bottom: 6px; }
+
+    .resource-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    .resource-table th { background: var(--bg); padding: 10px 14px; text-align: left; font-weight: 600; border: 1px solid var(--border); color: var(--text); }
+    .resource-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--text-2); }
+    .resource-table code { background: var(--bg); padding: 2px 6px; border-radius: 4px; }
+    .method { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: monospace; }
+    .get { background: #d4edda; color: #155724; }
+    .put { background: #cce5ff; color: #004085; }
+    .delete { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">✦</div>
+    SFCC Copilot
+  </a>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">Setup Guide</div>
+    <ul>
+      <li><a href="#requirements">Requirements</a></li>
+      <li><a href="#install">1. Install the Extension</a></li>
+      <li><a href="#ocapi">2. Configure OCAPI</a></li>
+      <li><a href="#account-manager">3. Account Manager</a></li>
+      <li><a href="#credentials">4. Enter Credentials</a></li>
+      <li><a href="#ocapi-json">Full OCAPI JSON</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <h1>Setup Guide</h1>
+    <p class="subtitle">Get SFCC Copilot running in your Business Manager in under 5 minutes.</p>
+
+    <!-- Requirements -->
+    <h2 id="requirements">Requirements</h2>
+    <ul>
+      <li>Google Chrome or Microsoft Edge browser</li>
+      <li>Access to your SFCC Business Manager (any sandbox or production)</li>
+      <li>Ability to edit OCAPI Settings in Business Manager</li>
+      <li>Access to <a href="https://account.demandware.com" target="_blank">account.demandware.com</a> to create an API client</li>
+      <li>SFCC Data API version <code>v24_1</code> or higher</li>
+    </ul>
+
+    <!-- Install -->
+    <h2 id="install">1. Install the Chrome Extension</h2>
+
+    <div class="step-block">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Download the extension</strong>
+        <span>Go to the <a href="https://github.com/thiagohaabib/sfcc-copilot" target="_blank">GitHub repository</a> and download the latest release ZIP.</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Open Chrome Extensions</strong>
+        <span>Navigate to <code>chrome://extensions</code> in your browser.</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Enable Developer Mode</strong>
+        <span>Toggle <strong>Developer mode</strong> in the top-right corner.</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Load the extension</strong>
+        <span>Click <strong>Load unpacked</strong> and select the <code>extension/</code> folder from the downloaded ZIP.</span>
+      </div>
+    </div>
+
+    <div class="alert alert-success">
+      ✓ The <strong>Copilot</strong> button will appear in the bottom-right corner of any Business Manager page.
+    </div>
+
+    <!-- OCAPI -->
+    <h2 id="ocapi">2. Configure OCAPI Settings</h2>
+
+    <p>SFCC Copilot uses the OCAPI Data API to create promotions, campaigns, and coupons. You need to grant your API client access to the required resources.</p>
+
+    <div class="step-block">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Open OCAPI Settings in Business Manager</strong>
+        <span>Go to <strong>Administration → Site Development → Open Commerce API Settings</strong></span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Select Type: Data — Context: your site</strong>
+        <span>Select <strong>Data</strong> from the Type dropdown, then select your site (e.g. <code>RefArch</code>) from the Context dropdown.</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Add the required resources</strong>
+        <span>Add the JSON below for your API client ID. If other clients already exist, append this as a new object in the <code>clients</code> array.</span>
+      </div>
+    </div>
+
+    <p>The required OCAPI resources for SFCC Copilot:</p>
+
+    <table class="resource-table">
+      <thead>
+        <tr>
+          <th>Resource</th>
+          <th>Methods</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>/sites/*/campaigns/*</code></td>
+          <td><span class="method get">GET</span> <span class="method put">PUT</span></td>
+          <td>Create & read campaigns</td>
+        </tr>
+        <tr>
+          <td><code>/sites/*/campaigns/*/promotions/*</code></td>
+          <td><span class="method put">PUT</span></td>
+          <td>Link promotions to campaigns</td>
+        </tr>
+        <tr>
+          <td><code>/sites/*/campaigns/*/customer_groups/*</code></td>
+          <td><span class="method put">PUT</span> <span class="method delete">DELETE</span></td>
+          <td>Assign & remove customer groups</td>
+        </tr>
+        <tr>
+          <td><code>/sites/*/campaigns/*/coupons/*</code></td>
+          <td><span class="method put">PUT</span></td>
+          <td>Link coupons to campaigns</td>
+        </tr>
+        <tr>
+          <td><code>/sites/*/promotions/*</code></td>
+          <td><span class="method get">GET</span> <span class="method put">PUT</span></td>
+          <td>Create & read promotions</td>
+        </tr>
+        <tr>
+          <td><code>/sites/*/coupons/*</code></td>
+          <td><span class="method get">GET</span> <span class="method put">PUT</span></td>
+          <td>Create coupons</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Account Manager -->
+    <h2 id="account-manager">3. Create an API Client in Account Manager</h2>
+
+    <p>If you don't have an API client yet, create one at <a href="https://account.demandware.com" target="_blank">account.demandware.com</a>.</p>
+
+    <div class="step-block">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Go to API Client section</strong>
+        <span>Login → <strong>API Client</strong> → <strong>Add API Client</strong></span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Add required roles</strong>
+        <span>Under <strong>Roles</strong>, add <strong>Sandbox API User</strong> and <strong>Salesforce Commerce API</strong> for your tenant (e.g. <code>bjjp_004</code>).</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Copy your Client ID and Client Secret</strong>
+        <span>You'll need these in the next step.</span>
+      </div>
+    </div>
+
+    <div class="alert alert-warn">
+      ⚠ The Client Secret is only shown once. Save it securely before leaving the page.
+    </div>
+
+    <!-- Credentials -->
+    <h2 id="credentials">4. Enter Credentials in the Extension</h2>
+
+    <div class="step-block">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Open the Copilot in Business Manager</strong>
+        <span>Click the <strong>Copilot</strong> button in the bottom-right corner of any BM page.</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Open Settings</strong>
+        <span>Click the <strong>⚙</strong> icon in the Copilot header.</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Fill in your credentials</strong>
+        <span>Enter your <strong>Base URL</strong> (e.g. <code>https://xxxx-001.dx.commercecloud.salesforce.com</code>), <strong>Client ID</strong>, <strong>Client Secret</strong>, and <strong>API Version</strong> (<code>v24_1</code>).</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Click Save & Connect</strong>
+        <span>Credentials are stored locally in your browser — never sent to any third-party server.</span>
+      </div>
+    </div>
+
+    <div class="alert alert-success">
+      ✓ You're ready! Type a promotion description in the chat and SFCC Copilot will handle the rest.
+    </div>
+
+    <!-- Full JSON -->
+    <h2 id="ocapi-json">Full OCAPI JSON Reference</h2>
+
+    <p>Replace <code>YOUR_CLIENT_ID</code> with your actual API client ID. Add this to the <strong>Data API → your site</strong> context in OCAPI Settings.</p>
+
+<pre><code>{
+  "_v": "24.1",
+  "clients": [
+    {
+      "client_id": "YOUR_CLIENT_ID",
+      "resources": [
+        {
+          "resource_id": "/sites/*/campaigns/*",
+          "methods": ["get", "put", "patch", "delete"],
+          "read_attributes": "(**)",
+          "write_attributes": "(**)"
+        },
+        {
+          "resource_id": "/sites/*/campaigns/*/promotions/*",
+          "methods": ["put", "patch", "delete"],
+          "read_attributes": "(**)",
+          "write_attributes": "(**)"
+        },
+        {
+          "resource_id": "/sites/*/campaigns/*/customer_groups/*",
+          "methods": ["put", "delete"],
+          "read_attributes": "(**)",
+          "write_attributes": "(**)"
+        },
+        {
+          "resource_id": "/sites/*/campaigns/*/coupons/*",
+          "methods": ["put", "delete"],
+          "read_attributes": "(**)",
+          "write_attributes": "(**)"
+        },
+        {
+          "resource_id": "/sites/*/promotions/*",
+          "methods": ["get", "put", "patch", "delete"],
+          "read_attributes": "(**)",
+          "write_attributes": "(**)"
+        },
+        {
+          "resource_id": "/sites/*/coupons/*",
+          "methods": ["get", "put", "patch", "delete"],
+          "read_attributes": "(**)",
+          "write_attributes": "(**)"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+    <div class="alert alert-info">
+      ℹ If you already have other clients in your OCAPI Settings, add this as an additional object inside the existing <code>"clients": [...]</code> array — do not replace the entire JSON.
+    </div>
+
+    <!-- Troubleshooting -->
+    <h2 id="troubleshooting">Troubleshooting</h2>
+
+    <h3>Error: ClientAccessForbiddenException</h3>
+    <p>Your API client doesn't have permission for the requested resource. Check that:</p>
+    <ul>
+      <li>The OCAPI resources were added to the correct site context (not Global)</li>
+      <li>The correct roles were added in Account Manager for your tenant</li>
+      <li>You waited ~3 minutes after saving OCAPI settings for changes to propagate</li>
+    </ul>
+
+    <h3>Error: OCAPI auth failed</h3>
+    <p>Authentication with the Salesforce Account Manager failed. Check that:</p>
+    <ul>
+      <li>Your Client ID and Client Secret are correct</li>
+      <li>The API client is enabled in Account Manager</li>
+      <li>The tenant roles include <strong>Sandbox API User</strong> for your environment</li>
+    </ul>
+
+    <h3>Copilot button not appearing</h3>
+    <p>The extension only injects on Business Manager URLs matching <code>*.commercecloud.salesforce.com</code> or <code>*.demandware.net</code>. Make sure you're on a BM page and the extension is enabled in <code>chrome://extensions</code>.</p>
+
+    <h3>Still having issues?</h3>
+    <p>Contact us at <a href="mailto:thiago@bloomcreate.com.br">thiago@bloomcreate.com.br</a> and include the error message from the Copilot chat.</p>
+
+  </main>
+</div>
+
+</body>
+</html>
