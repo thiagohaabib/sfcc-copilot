@@ -8,7 +8,9 @@ import ocapiRoute from './routes/ocapi.js'
 const app = Fastify({ logger: true })
 
 await app.register(cors, {
-  origin: ['chrome-extension://*', 'http://localhost:*'],
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-sfcc-config'],
 })
 
 await app.register(chatRoute, { prefix: '/api' })
