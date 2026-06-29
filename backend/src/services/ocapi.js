@@ -1,26 +1,27 @@
 /**
- * SFCC OCAPI client
- * Handles OAuth2 (client_credentials) and all Data API calls
+ * SFCC OCAPI client — supports per-request credentials (multi-tenant)
  */
 
-let tokenCache = { token: null, expiresAt: 0 }
+const tokenCache = new Map() // key: client_id → { token, expiresAt }
 
-async function getAccessToken() {
-  if (tokenCache.token && Date.now() < tokenCache.expiresAt) {
-    return tokenCache.token
-  }
+async function getAccessToken(config) {
+  const { client_id, client_secret } = config
+  const cached = tokenCache.get(client_id)
+  if (cached && Date.now() < cached.expiresAt) return cached.token
 
-  const { SFCC_BASE_URL, SFCC_CLIENT_ID, SFCC_CLIENT_SECRET } = process.env
-  const credentials = Buffer.from(`${SFCC_CLIENT_ID}:${SFCC_CLIENT_SECRET}`).toString('base64')
+  const credentials = Buffer.from(`${client_id}:${client_secret}`).toString('base64')
 
-  const res = await fetch(`${SFCC_BASE_URL}/dw/oauth2/access_token`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'grant_type=client_credentials',
-  })
+  const res = await fetch(
+    `https://account.demandware.com/dw/oauth2/access_token?client_id=${client_id}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials',
+    }
+  )
 
   if (!res.ok) {
     const err = await res.text()
@@ -28,17 +29,29 @@ async function getAccessToken() {
   }
 
   const data = await res.json()
-  tokenCache.token = data.access_token
-  tokenCache.expiresAt = Date.now() + (data.expires_in - 60) * 1000
+  tokenCache.set(client_id, {
+    token: data.access_token,
+    expiresAt: Date.now() + (data.expires_in - 60) * 1000,
+  })
 
-  return tokenCache.token
+  return data.access_token
 }
 
-async function ocapiRequest(method, path, body = null) {
-  const { SFCC_BASE_URL, SFCC_SITE_ID } = process.env
-  const token = await getAccessToken()
+function getConfig(sfccConfig = null) {
+  return sfccConfig || {
+    base_url: process.env.SFCC_BASE_URL,
+    client_id: process.env.SFCC_CLIENT_ID,
+    client_secret: process.env.SFCC_CLIENT_SECRET,
+    api_version: process.env.SFCC_API_VERSION || 'v24_1',
+  }
+}
 
-  const url = `${SFCC_BASE_URL}/dw/data/v23_2/sites/${SFCC_SITE_ID}${path}`
+export async function ocapiRequest(method, path, body = null, siteId = null, sfccConfig = null) {
+  const config = getConfig(sfccConfig)
+  const token = await getAccessToken(config)
+  const site = siteId || process.env.SFCC_SITE_ID
+  const version = config.api_version || 'v24_1'
+  const url = `${config.base_url}/s/-/dw/data/${version}/sites/${site}${path}`
 
   const res = await fetch(url, {
     method,
@@ -49,7 +62,8 @@ async function ocapiRequest(method, path, body = null) {
     body: body ? JSON.stringify(body) : undefined,
   })
 
-  const data = await res.json()
+  const text = await res.text()
+  const data = text ? JSON.parse(text) : {}
 
   if (!res.ok) {
     throw new Error(`OCAPI error ${res.status}: ${JSON.stringify(data)}`)
@@ -58,121 +72,92 @@ async function ocapiRequest(method, path, body = null) {
   return data
 }
 
-// ─── Campaign ─────────────────────────────────────────────────────────────────
+export async function getPromotion(id, siteId, sfccConfig) {
+  return ocapiRequest('GET', `/promotions/${id}`, null, siteId, sfccConfig)
+}
 
-export async function createCampaign(campaign) {
-  return ocapiRequest('PUT', `/campaigns/${campaign.id}`, {
-    id: campaign.id,
-    name: campaign.name,
-    description: campaign.description,
+export async function getCampaign(id, siteId, sfccConfig) {
+  return ocapiRequest('GET', `/campaigns/${id}`, null, siteId, sfccConfig)
+}
+
+export async function createCampaign(campaign, hasCoupon = false, siteId = null, sfccConfig = null) {
+  const campaignId = campaign.id
+  await ocapiRequest('PUT', `/campaigns/${campaignId}`, {
     start_date: campaign.start_date,
-    end_date: campaign.end_date,
+    end_date: campaign.end_date || undefined,
     enabled: campaign.enabled ?? true,
-  })
+  }, siteId, sfccConfig)
+
+  if (!hasCoupon && campaign.customer_group) {
+    await ocapiRequest('PUT', `/campaigns/${campaignId}/customer_groups/${campaign.customer_group}`, {}, siteId, sfccConfig)
+  }
+
+  return { campaign_id: campaignId }
 }
 
-// ─── Promotion ────────────────────────────────────────────────────────────────
-
-export async function createPromotion(promotion) {
-  const payload = {
-    id: promotion.id,
-    name: promotion.name,
+export async function createPromotion(promotion, siteId = null, sfccConfig = null) {
+  return ocapiRequest('PUT', `/promotions/${promotion.id}`, {
     enabled: promotion.enabled ?? true,
-    exclusive: promotion.exclusive ?? false,
-    start_date: promotion.start_date,
-    end_date: promotion.end_date,
-  }
-
-  if (promotion.type === 'percentage') {
-    payload.discount = {
-      type: 'percentage',
-      percentage: promotion.discount_value,
-    }
-  } else if (promotion.type === 'fixed_amount') {
-    payload.discount = {
-      type: 'fixed_price',
-      amount: promotion.discount_value,
-      currency: promotion.currency || 'BRL',
-    }
-  } else if (promotion.type === 'free_shipping') {
-    payload.discount = { type: 'free_shipping' }
-  }
-
-  if (promotion.condition_min_order) {
-    payload.qualifying_products_operator = 'any'
-    payload.basket_conditions = {
-      threshold_type: 'amount',
-      threshold_amount: promotion.condition_min_order,
-    }
-  }
-
-  if (promotion.condition_customer_group) {
-    payload.customer_groups = [{ id: promotion.condition_customer_group }]
-  }
-
-  return ocapiRequest('PUT', `/promotions/${promotion.id}`, payload)
+    promotion_class: 'product',
+  }, siteId, sfccConfig)
 }
 
-// ─── Link promotion to campaign ───────────────────────────────────────────────
-
-export async function linkPromotionToCampaign(campaignId, promotionId) {
-  return ocapiRequest(
-    'PUT',
-    `/campaigns/${campaignId}/promotion-campaign-assignments/${promotionId}`,
-    { campaign_id: campaignId, promotion_id: promotionId, enabled: true }
-  )
+export async function linkPromotionToCampaign(campaignId, promotionId, siteId = null, sfccConfig = null) {
+  return ocapiRequest('PUT', `/campaigns/${campaignId}/promotions/${promotionId}`,
+    { campaign_id: campaignId, promotion_id: promotionId, enabled: true }, siteId, sfccConfig)
 }
 
-// ─── Coupon ───────────────────────────────────────────────────────────────────
-
-export async function createCouponList(coupon) {
-  return ocapiRequest('PUT', `/coupon-lists/${coupon.id}`, {
-    id: coupon.id,
-    coupon_count: coupon.usage_limit ?? 9999,
-    coupon_type: coupon.single_use ? 'single_use' : 'reusable',
+export async function createCoupon(coupon, siteId = null, sfccConfig = null) {
+  return ocapiRequest('PUT', `/coupons/${coupon.id}`, {
+    type: 'single_code',
+    single_code: coupon.code,
     case_insensitive: coupon.case_insensitive ?? true,
-  })
+    enabled: true,
+  }, siteId, sfccConfig)
 }
 
-export async function createCouponCode(couponListId, code) {
-  return ocapiRequest('POST', `/coupon-lists/${couponListId}/coupons`, {
-    code,
-  })
+export async function linkCouponToCampaign(campaignId, couponId, siteId = null, sfccConfig = null) {
+  return ocapiRequest('PUT', `/campaigns/${campaignId}/coupons/${couponId}`,
+    { campaign_id: campaignId, coupon_id: couponId, enabled: true }, siteId, sfccConfig)
 }
 
-export async function linkCouponToPromotion(promotionId, couponListId) {
-  return ocapiRequest('PUT', `/promotions/${promotionId}`, {
-    coupons: [{ coupon_list_id: couponListId, enabled: true }],
-  })
+export async function removeCampaignCustomerGroup(campaignId, customerGroupId, siteId = null, sfccConfig = null) {
+  return ocapiRequest('DELETE', `/campaigns/${campaignId}/customer_groups/${customerGroupId}`, null, siteId, sfccConfig)
 }
 
-// ─── Orchestrator ─────────────────────────────────────────────────────────────
-
-export async function executeOperation(parsed) {
+export async function executeOperation(parsed, siteId = null, sfccConfig = null) {
   const results = []
+  const hasCoupon = !!parsed.coupon
+
+  if (parsed.intent === 'add_coupon_to_existing' && parsed.existing_campaign_id) {
+    if (parsed.coupon) {
+      await createCoupon(parsed.coupon, siteId, sfccConfig)
+      results.push({ step: 'coupon', id: parsed.coupon.id, status: 'created' })
+      await linkCouponToCampaign(parsed.existing_campaign_id, parsed.coupon.id, siteId, sfccConfig)
+      results.push({ step: 'coupon_link', status: 'linked' })
+    }
+    return results
+  }
 
   if (parsed.campaign) {
-    const r = await createCampaign(parsed.campaign)
-    results.push({ step: 'campaign', id: r.id, status: 'created' })
+    const r = await createCampaign(parsed.campaign, hasCoupon, siteId, sfccConfig)
+    results.push({ step: 'campaign', id: r.campaign_id, status: 'created' })
   }
 
   if (parsed.promotion) {
-    const r = await createPromotion(parsed.promotion)
-    results.push({ step: 'promotion', id: r.id, status: 'created' })
-
+    await createPromotion(parsed.promotion, siteId, sfccConfig)
+    results.push({ step: 'promotion', id: parsed.promotion.id, status: 'created' })
     if (parsed.campaign) {
-      await linkPromotionToCampaign(parsed.campaign.id, parsed.promotion.id)
-      results.push({ step: 'link', status: 'linked' })
+      await linkPromotionToCampaign(parsed.campaign.id, parsed.promotion.id, siteId, sfccConfig)
+      results.push({ step: 'promotion_link', status: 'linked' })
     }
   }
 
   if (parsed.coupon) {
-    await createCouponList(parsed.coupon)
-    await createCouponCode(parsed.coupon.id, parsed.coupon.code)
-    results.push({ step: 'coupon', code: parsed.coupon.code, status: 'created' })
-
-    if (parsed.promotion) {
-      await linkCouponToPromotion(parsed.promotion.id, parsed.coupon.id)
+    await createCoupon(parsed.coupon, siteId, sfccConfig)
+    results.push({ step: 'coupon', id: parsed.coupon.id, status: 'created' })
+    if (parsed.campaign) {
+      await linkCouponToCampaign(parsed.campaign.id, parsed.coupon.id, siteId, sfccConfig)
       results.push({ step: 'coupon_link', status: 'linked' })
     }
   }
