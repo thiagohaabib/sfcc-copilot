@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — SFCC Copilot</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1220; color: #c8cfe0; line-height: 1.7; }
+    nav { display: flex; align-items: center; gap: 10px; padding: 18px 44px; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .logo { font-weight: 600; font-size: 16px; color: #e8eef8; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 30px; height: 30px; background: #e8ecf8; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    main { max-width: 680px; margin: 60px auto; padding: 0 24px 80px; }
+    h1 { font-size: 28px; font-weight: 700; color: #e8eef8; margin-bottom: 8px; }
+    .date { font-size: 13px; color: #4a5a78; margin-bottom: 40px; }
+    h2 { font-size: 16px; font-weight: 600; color: #e8eef8; margin: 32px 0 10px; }
+    p { font-size: 14px; color: #7a8fb5; margin-bottom: 12px; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    li { font-size: 14px; color: #7a8fb5; margin-bottom: 6px; }
+    a { color: #3a5299; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 22 22" width="18" height="18">
+        <polygon points="15,2 8,2 5,11.5 10,11 4,20 17,10 12,10.5" fill="#1a2340"/>
+      </svg>
+    </div>
+    SFCC Copilot
+  </a>
+</nav>
+<main>
+  <h1>Privacy Policy</h1>
+  <p class="date">Last updated: June 29, 2026</p>
+
+  <p>SFCC Copilot ("we", "our", or "us") is a Chrome Extension developed by Habib Enterprises Technology. This Privacy Policy explains how we handle information in connection with the SFCC Copilot extension.</p>
+
+  <h2>Data We Do Not Collect</h2>
+  <p>SFCC Copilot does not collect, store, or transmit any personally identifiable information to our servers. We do not track usage, browsing history, or any personal data.</p>
+
+  <h2>Data Stored Locally</h2>
+  <p>The following information is stored exclusively in your browser's local storage (chrome.storage.local) and never leaves your device to our servers:</p>
+  <ul>
+    <li>Your SFCC instance Base URL</li>
+    <li>Your SFCC API Client ID and Client Secret</li>
+    <li>Your SFCC Copilot license key</li>
+    <li>Your preferred API version</li>
+  </ul>
+  <p>This data is used solely to authenticate with your own Salesforce Commerce Cloud instance and to validate your license.</p>
+
+  <h2>Data Sent to Third Parties</h2>
+  <p>When you use SFCC Copilot, the following data is transmitted:</p>
+  <ul>
+    <li><strong>To our backend (Railway):</strong> Your natural language prompt, conversation history, license key, and SFCC credentials — solely to process your request and execute OCAPI calls on your behalf. We do not log or store this data.</li>
+    <li><strong>To your SFCC instance:</strong> API requests to create or retrieve promotions, campaigns, and coupons — using your own credentials against your own instance.</li>
+    <li><strong>To Anthropic:</strong> Your prompts are processed by Claude (Anthropic's AI) to interpret your requests. Anthropic's privacy policy applies: <a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a>.</li>
+  </ul>
+
+  <h2>No Data Sales</h2>
+  <p>We do not sell, rent, or share any user data with third parties for advertising or any other purpose.</p>
+
+  <h2>Security</h2>
+  <p>Your SFCC credentials are stored only in your browser's local storage. All communication between the extension and our backend uses HTTPS.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. The updated date will be reflected at the top of this page.</p>
+
+  <h2>Contact</h2>
+  <p>For questions about this Privacy Policy, contact us at <a href="mailto:thiago.habib56@gmail.com">thiago.habib56@gmail.com</a>.</p>
+</main>
+</body>
+</html>
