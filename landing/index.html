@@ -334,7 +334,7 @@
     </div>
 
     <footer>
-      <span>© 2026 SFCC Copilot · <span style="color:#1e2a3a">A Habib Enterprises Technology</span></span>
+      <span>© 2026 SFCC Copilot · <span style="color:#3a4a6a">A Habib Enterprises Technology</span></span>
       <div style="display:flex;gap:24px">
         <a href="setup.html">Setup Guide</a>
         <a href="https://wa.me/5513997486881" target="_blank">Contact</a>
@@ -384,9 +384,9 @@ function drawBranch(ctx, x1, y1, x2, y2, depth, alpha) {
 
 function strike() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const startX = canvas.width*(0.4+Math.random()*0.3);
-  const endX = startX+(Math.random()-0.5)*canvas.width*0.3;
-  const endY = canvas.height*(0.5+Math.random()*0.3);
+  const startX = canvas.width*(0.2+Math.random()*0.6);
+  const endX = startX+(Math.random()-0.5)*canvas.width*0.4;
+  const endY = canvas.height*(0.6+Math.random()*0.35);
   drawBranch(ctx,startX,0,endX,endY,6,0.9);
   glow.style.opacity='1';
   setTimeout(()=>glow.style.opacity='0',150);
