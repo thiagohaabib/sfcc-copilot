@@ -56,14 +56,20 @@
 
     /* ── Nav ── */
     nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 64px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
       border-bottom: 0.5px solid rgba(255,255,255,0.07);
       position: sticky; top: 0; z-index: 100;
-      background: rgba(13,18,32,0.85);
+      background: linear-gradient(90deg, rgba(10,13,24,0.95) 0%, rgba(13,18,32,0.95) 8%, rgba(13,18,32,0.95) 92%, rgba(18,24,44,0.95) 100%);
       backdrop-filter: blur(12px);
+      width: 100%;
+    }
+
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%;
       max-width: 1280px;
-      margin: 0 auto;
+      padding: 20px 64px;
     }
 
     .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; color: #e8eef8; }
@@ -279,7 +285,7 @@
     }
 
     @media (max-width: 768px) {
-      nav { padding: 16px 20px; }
+      .nav-inner { padding: 16px 20px; }
       .nav-links { display: none; }
       .hero h1 { font-size: 36px; }
       .features { padding: 0 20px 40px; }
@@ -300,19 +306,21 @@
 
   <div class="content">
     <nav>
-      <div class="nav-logo">
-        <div class="logo-icon">
-          <img src="icon128.png" alt="SFCC Copilot" />
+      <div class="nav-inner">
+        <div class="nav-logo">
+          <div class="logo-icon">
+            <img src="icon128.png" alt="SFCC Copilot" />
+          </div>
+          SFCC Copilot
         </div>
-        SFCC Copilot
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="setup.html">Setup Guide</a>
+        </div>
+        <a href="https://github.com/thiagohaabib/sfcc-copilot" target="_blank" class="btn-nav">Install Extension</a>
       </div>
-      <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#pricing">Pricing</a>
-        <a href="setup.html">Setup Guide</a>
-      </div>
-      <a href="https://github.com/thiagohaabib/sfcc-copilot" target="_blank" class="btn-nav">Install Extension</a>
     </nav>
 
     <div class="hero-section">
